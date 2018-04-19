@@ -1,1 +1,7 @@
 **/node_modules
+
+functions/node_modules/
+
+public/client-apollo/node_modules/
+
+public/client-fetch/node_modules/

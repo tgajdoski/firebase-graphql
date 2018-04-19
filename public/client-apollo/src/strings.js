@@ -2,14 +2,14 @@ import { gql } from 'react-apollo';
 
 export const ACTION_PREFIX = 'app/';
 export const FIREBASE_CONFIG = {
-  apiKey: 'AIzaSyCfU46SrON5RqWlI_b9SS5rs9gsUwjQyjI',
-  authDomain: 'fir-graphql-d3127.firebaseapp.com',
-  databaseURL: 'https://fir-graphql-d3127.firebaseio.com',
-  projectId: 'fir-graphql-d3127',
-  storageBucket: 'fir-graphql-d3127.appspot.com',
-  messagingSenderId: '435897940971',
+  apiKey: 'AIzaSyA6qTVu4xEcxidLxcXHCCejf_h8XqsUgvI',
+  authDomain: 'folder-qraphql-firebase.firebaseapp.com',
+  databaseURL: 'https://folder-qraphql-firebase.firebaseio.com',
+  projectId: 'folder-qraphql-firebase',
+  storageBucket: 'folder-qraphql-firebase.appspot.com',
+  messagingSenderId: '459533231586',
 };
-export const ENDPOINT = 'https://us-central1-fir-graphql-d3127.cloudfunctions.net/api/graphql';
+export const ENDPOINT = 'https://us-central1-folder-qraphql-firebase.cloudfunctions.net/api/graphql';
 export const FOLDERS_GQL = gql`
   query {
     folders {
