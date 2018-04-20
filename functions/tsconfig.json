@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "./",
+    "noImplicitAny": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "graphql/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
