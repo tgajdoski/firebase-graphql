@@ -1,5 +1,5 @@
 import * as graphqlTools from 'graphql-tools';
-import * as resolvers from './resolvers';
+const resolvers = require('./resolvers');
 
 const schema = `
 input FolderCreateInput {

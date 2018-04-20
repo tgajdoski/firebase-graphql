@@ -3,7 +3,7 @@ import * as cors from 'cors';
 import * as functions from 'firebase-functions';
 import * as apolloServerExpress from 'apollo-server-express';
 import * as schemaPrinter from 'graphql/utilities/schemaPrinter';
-import * as schema from './graphql/schema';
+const schema = require('./graphql/schema');
 
 const app = express();
 // BODYPARSER IS ALREADY IMPLEMENTED BY FIREBASE

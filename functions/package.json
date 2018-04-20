@@ -1,6 +1,10 @@
 {
   "name": "functions",
   "description": "Cloud Functions for Firebase",
+  "scripts":{
+    "build" : "webpack",
+    "deploy" : "firebase deploy --only functions"
+  },
   "dependencies": {
     "apollo-server-express": "^1.1.0",
     "cors": "^2.8.4",
