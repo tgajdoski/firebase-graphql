@@ -3,52 +3,60 @@ const functions = require('firebase-functions');
 
 admin.initializeApp();
 
-const foldersRef = admin.database().ref('folders');
+const approvalsRef = admin.database().ref('approvals');
 module.exports = {
   Query: {
-    folders() {
-      return foldersRef.once('value')
+    approvals() {
+      return approvalsRef.once('value')
         .then(snapshot => {
-          const folders = snapshot.val();
-          if (folders === null) return [];
-          return Object.keys(folders).map(o => Object.assign({ id: o }, folders[o]));
+          const approvals = snapshot.val();
+          if (approvals === null) return [];
+          return Object.keys(approvals).map(o => Object.assign({ id: o }, approvals[o]));
+        });
+    },
+    approval(_, { id }) {
+      return admin.database().ref(`approvals/${id}`).once('value')
+        .then(snapshot => {
+          const approval = snapshot.val();
+          return Object.assign({ id: id }, approval)
+          // console.log('approval' , approval);
         });
     },
   },
   Mutation: {
-    createFolder(_, { input }) {
+    createApproval(_, { input }) {
       return (
         new Promise((resolve) => {
-          const folder = foldersRef.push(input, () => {
-            resolve(Object.assign({ id: folder.key }, input)
+          const approval = approvalsRef.push(input, () => {
+            resolve(Object.assign({ id: approval.key }, input)
             );
           });
         })
       );
     },
-    updateFolder(_, { input }) {
-      const folderRef = foldersRef.child(input.id);
-      return folderRef.once('value')
+    updateApproval(_, { input }) {
+      const approvalRef = approvalsRef.child(input.id);
+      return approvalRef.once('value')
         .then(snapshot => {
-          const folder = snapshot.val();
-          if (folder === null) throw new Error('404');
-          return folder;
+          const approval = snapshot.val();
+          if (approval === null) throw new Error('404');
+          return approval;
         })
-        .then((folder) => {
-          const update = Object.assign(folder, input);
+        .then((approval) => {
+          const update = Object.assign(approval, input);
           delete update.id;
-          return folderRef.set(update).then(() => (Object.assign({ id: input.id }, update)));
+          return approvalRef.set(update).then(() => (Object.assign({ id: input.id }, update)));
         });
     },
-    deleteFolder(_, { input }) {
-      const folderRef = foldersRef.child(input.id);
-      return folderRef.once('value')
+    deleteApproval(_, { input }) {
+      const approvalRef = approvalsRef.child(input.id);
+      return approvalRef.once('value')
         .then((snapshot) => {
-          const folder = snapshot.val();
-          if (folder === null) throw new Error('404');
-          return Object.assign({ id: input.id }, folder);
+          const approval = snapshot.val();
+          if (approval === null) throw new Error('404');
+          return Object.assign({ id: input.id }, approval);
         })
-        .then(folder => folderRef.remove().then(() => (folder)));
+        .then(approval => approvalRef.remove().then(() => (approval)));
     }
   }
 };
