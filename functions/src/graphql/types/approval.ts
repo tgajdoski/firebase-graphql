@@ -11,7 +11,20 @@ type Publish {
 }
 
 input ApprovalCreateInput {
-  name: String
+  category : String
+  connection_id : String
+  content : String
+  created_at : Int,
+  created_by : String
+  edited_by : String
+  image : String
+  oid : String
+  original_content : String
+  source : String
+  status : String
+  uid : String
+  updated_at : String
+  updated_by : String
 }
 
 input ApprovalInput {

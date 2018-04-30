@@ -5,6 +5,8 @@ const resolvers = require('./resolvers/resolvers');
 const approval = require('./types/approval');
 const device = require('./types/device');
 const connection = require('./types/connection');
+const group = require('./types/group');
+const organization = require('./types/organization');
 
 import * as _ from 'lodash';
 
@@ -19,6 +21,12 @@ const Query = `
 
     connections: [Connection]
     connection(id: String!): Connection
+
+    groups: [Group]
+    group(id: String!): Group
+
+    organizations: [Organization]
+    organization(id: String!): Organization
   }
 `;
 
@@ -36,6 +44,14 @@ const Mutation = `
     updateConnection(input: ConnectionInput): Connection
     deleteConnection(input: ConnectionDeleteInput): Connection
 
+    createGroup(input: GroupCreateInput!): Group
+    updateGroup(input: GroupInput): Group
+    deleteGroup(input: GroupDeleteInput): Group
+
+    createOrganization(input: OrganizationCreateInput!): Organization
+    updateOrganization(input: OrganizationInput): Organization
+    deleteOrganization(input: OrganizationDeleteInput):Organization
+
   }
 `;
 
@@ -49,7 +65,7 @@ const SchemaDefinition = `
 
 
 module.exports = graphqlTools.makeExecutableSchema({
-  typeDefs: [SchemaDefinition, Query, Mutation, approval, device, connection],
+  typeDefs: [SchemaDefinition, Query, Mutation, approval, device, connection, group, organization],
   resolvers: resolvers
 });
 

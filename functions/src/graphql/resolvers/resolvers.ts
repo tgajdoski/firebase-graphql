@@ -6,6 +6,11 @@ admin.initializeApp();
 const approvalsRef = admin.database().ref('approvals');
 const devicesRef = admin.database().ref('devices');
 const connectionsRef = admin.database().ref('connections');
+const groupsRef = admin.database().ref('groups');
+const orgsRef = admin.database().ref('organizations');
+
+
+
 
 module.exports = {
   Query: {
@@ -62,6 +67,43 @@ module.exports = {
           // console.log('approval' , approval);
         });
     },
+
+    // group
+    groups() {
+      return groupsRef.once('value')
+        .then(snapshot => {
+          const groups = snapshot.val();
+          if (groups === null) return [];
+          return Object.keys(groups).map(o => Object.assign({ id: o }, groups[o]));
+        });
+    },
+    group(_, { id }) {
+      return admin.database().ref(`groups/${id}`).once('value')
+        .then(snapshot => {
+          const group = snapshot.val();
+          return Object.assign({ id: id }, group)
+          // console.log('approval' , approval);
+        });
+    },
+
+    // group
+    organizations() {
+      return orgsRef.once('value')
+        .then(snapshot => {
+          const orgs = snapshot.val();
+          if (orgs === null) return [];
+          return Object.keys(orgs).map(o => Object.assign({ id: o }, orgs[o]));
+        });
+    },
+    organization(_, { id }) {
+      return admin.database().ref(`oraganizations/${id}`).once('value')
+        .then(snapshot => {
+          const org = snapshot.val();
+          return Object.assign({ id: id }, org)
+          // console.log('approval' , approval);
+        });
+    },
+  
 
   },
   Mutation: {
@@ -175,5 +217,78 @@ module.exports = {
         .then(conn => connRef.remove().then(() => (conn)));
     },
 
-  }
+    // group
+    createGroup(_, { input }) {
+      return (
+        new Promise((resolve) => {
+          const group = groupsRef.push(input, () => {
+            resolve(Object.assign({ id: group.key }, input)
+            );
+          });
+        })
+      );
+    },
+    updateGroup(_, { input }) {
+      const groupRef = groupsRef.child(input.id);
+      return groupRef.once('value')
+        .then(snapshot => {
+          const group = snapshot.val();
+          if (group === null) throw new Error('404');
+          return group;
+        })
+        .then((group) => {
+          const update = Object.assign(group, input);
+          delete update.id;
+          return groupRef.set(update).then(() => (Object.assign({ id: input.id }, update)));
+        });
+    },
+    deleteGroup(_, { input }) {
+      const groupRef = groupsRef.child(input.id);
+      return groupRef.once('value')
+        .then((snapshot) => {
+          const group = snapshot.val();
+          if (group === null) throw new Error('404');
+          return Object.assign({ id: input.id }, group);
+        })
+        .then(conn => groupRef.remove().then(() => (group)));
+    },
+
+    // Organization
+    createOrganization(_, { input }) {
+      return (
+        new Promise((resolve) => {
+          const org = orgsRef.push(input, () => {
+            resolve(Object.assign({ id: org.key }, input)
+            );
+          });
+        })
+      );
+    },
+    updateOrganization(_, { input }) {
+      const orgRef = orgsRef.child(input.id);
+      return orgRef.once('value')
+        .then(snapshot => {
+          const org = snapshot.val();
+          if (org === null) throw new Error('404');
+          return org;
+        })
+        .then((org) => {
+          const update = Object.assign(org, input);
+          delete update.id;
+          return orgRef.set(update).then(() => (Object.assign({ id: input.id }, update)));
+        });
+    },
+    deleteOrganization(_, { input }) {
+      const orgRef = groupsRef.child(input.id);
+      return orgRef.once('value')
+        .then((snapshot) => {
+          const org = snapshot.val();
+          if (org === null) throw new Error('404');
+          return Object.assign({ id: input.id }, org);
+        })
+        .then(org => orgRef.remove().then(() => (org)));
+    },
+
+
+    }
 };
