@@ -1,6 +1,8 @@
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
-
+import { ApprovalStatus } from '../utils';
+import * as Lodash from 'lodash';
+import { getHeapSpaceStatistics } from 'v8';
 admin.initializeApp();
 
 const approvalsRef = admin.database().ref('approvals');
@@ -22,11 +24,62 @@ const orgsRef = admin.database().ref('organizations');
 // }
 
 
+function isApproved(approval) {
+  return approval.status === ApprovalStatus.Approved
+}
+
+function isRejected(approval) {
+  return approval.status === ApprovalStatus.Rejected
+}
+function isPending(approval) {
+  return approval.status === ApprovalStatus.Sent
+}
+
 module.exports = {
   Query: {
+    // async usrerapprovals(_, { oid, uid, status }, { token }) {
+    //   console.log("oid uid ova ona " , oid, uid, status);
+    //   let userid = await admin.auth().verifyIdToken(token);
+    //   let userApprovalsSnap = (await orgsRef.child(`${oid}, ${uid}`).once('value'));
+    //   console.log("userApprovalsSnap" , userApprovalsSnap);
+    //   let userOrgApprovals = [];
+    //   userApprovalsSnap.forEach(snap => {
+    //     userOrgApprovals.push([snap.key, snap]);
+    //   });
+    //   console.log("userOrgApprovals" , userOrgApprovals);
+    //   // console.log("userOrgApprovals" , userOrgApprovals);
+    //   let approvals = [];
+    //   for (let [approvalId, _] of userOrgApprovals) {
+    //     let approval = (await approvalsRef.child(`${approvalId}`).once('value')).val();
+    //     approvals.push(approval);
+    //   }
+
+    //   return approvals;
+    // },
+    async usrerapprovals(_, { oid, uid, status }, { token }) {
+      let userid = await admin.auth().verifyIdToken(token);
+      let userApprovalsSnap = (await orgsRef.child(`${oid}, ${uid}`).once('value'));
+
+      async function getApproval(aid) {
+        let approvalSnap = await approvalsRef.child(`${aid}`).once('value');
+        return approvalSnap;
+      }
+
+      let approvalsPromises = [];
+      userApprovalsSnap.forEach(snap => {
+        let aid = snap.key;
+        let $p = getApproval(aid).then(
+          function (approval) {
+            return approval;
+          });
+        approvalsPromises.push($p);
+      });
+      return await Promise.all(approvalsPromises);
+    },
     // approvals 
     async  approvals(_, { }, { token }) {
       let uid = await admin.auth().verifyIdToken(token);
+      console.log('uid:', uid);
       return approvalsRef.once('value')
         .then(snapshot => {
           const approvals = snapshot.val();
@@ -104,7 +157,7 @@ module.exports = {
     },
 
     // group
-   async organizations(_, { }, { token }) {
+    async organizations(_, { }, { token }) {
       let uid = await admin.auth().verifyIdToken(token);
       return orgsRef.once('value')
         .then(snapshot => {

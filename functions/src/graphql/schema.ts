@@ -14,6 +14,7 @@ import * as _ from 'lodash';
 const Query = `
   type Query {
     approvals: [Approval]
+    usrerapprovals(oid: String!, uid: String!, status: String): [Approval]
     approval(id: String!): Approval
 
     devices: [Device]
