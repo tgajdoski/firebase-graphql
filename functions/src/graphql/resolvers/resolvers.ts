@@ -9,13 +9,24 @@ const connectionsRef = admin.database().ref('connections');
 const groupsRef = admin.database().ref('groups');
 const orgsRef = admin.database().ref('organizations');
 
+// function verifyToken(idToken){
+//   // if uid is null user is not authenticated
+//   admin.auth().verifyIdToken(idToken)
+//   .then(function(decodedToken) {
+//     return decodedToken.uid;
+//   }).catch(function(error) {
+//     console.log(error)
+//     return null;
+//   });
 
+// }
 
 
 module.exports = {
   Query: {
     // approvals 
-    approvals() {
+    async  approvals(_, { }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return approvalsRef.once('value')
         .then(snapshot => {
           const approvals = snapshot.val();
@@ -23,7 +34,8 @@ module.exports = {
           return Object.keys(approvals).map(o => Object.assign({ id: o }, approvals[o]));
         });
     },
-    approval(_, { id }) {
+    async approval(_, { id }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return admin.database().ref(`approvals/${id}`).once('value')
         .then(snapshot => {
           const approval = snapshot.val();
@@ -31,9 +43,9 @@ module.exports = {
           // console.log('approval' , approval);
         });
     },
-
     // devices
-    devices() {
+    async devices(_, { }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return devicesRef.once('value')
         .then(snapshot => {
           const devices = snapshot.val();
@@ -41,7 +53,8 @@ module.exports = {
           return Object.keys(devices).map(o => Object.assign({ id: o }, devices[o]));
         });
     },
-    device(_, { id }) {
+    async device(_, { id }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return admin.database().ref(`devices/${id}`).once('value')
         .then(snapshot => {
           const device = snapshot.val();
@@ -51,7 +64,8 @@ module.exports = {
     },
 
     // connection
-    connections() {
+    async  connections(_, { }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return connectionsRef.once('value')
         .then(snapshot => {
           const connections = snapshot.val();
@@ -59,7 +73,8 @@ module.exports = {
           return Object.keys(connections).map(o => Object.assign({ id: o }, connections[o]));
         });
     },
-    connection(_, { id }) {
+    async connection(_, { id }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return admin.database().ref(`connections/${id}`).once('value')
         .then(snapshot => {
           const connection = snapshot.val();
@@ -69,7 +84,8 @@ module.exports = {
     },
 
     // group
-    groups() {
+    async  groups(_, { }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return groupsRef.once('value')
         .then(snapshot => {
           const groups = snapshot.val();
@@ -77,7 +93,8 @@ module.exports = {
           return Object.keys(groups).map(o => Object.assign({ id: o }, groups[o]));
         });
     },
-    group(_, { id }) {
+    async group(_, { id }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return admin.database().ref(`groups/${id}`).once('value')
         .then(snapshot => {
           const group = snapshot.val();
@@ -87,7 +104,8 @@ module.exports = {
     },
 
     // group
-    organizations() {
+   async organizations(_, { }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return orgsRef.once('value')
         .then(snapshot => {
           const orgs = snapshot.val();
@@ -95,7 +113,8 @@ module.exports = {
           return Object.keys(orgs).map(o => Object.assign({ id: o }, orgs[o]));
         });
     },
-    organization(_, { id }) {
+    async organization(_, { id }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return admin.database().ref(`oraganizations/${id}`).once('value')
         .then(snapshot => {
           const org = snapshot.val();
@@ -103,13 +122,13 @@ module.exports = {
           // console.log('approval' , approval);
         });
     },
-  
+
 
   },
   Mutation: {
-
     // approvals
-    createApproval(_, { input }) {
+    async createApproval(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return (
         new Promise((resolve) => {
           const approval = approvalsRef.push(input, () => {
@@ -119,7 +138,8 @@ module.exports = {
         })
       );
     },
-    updateApproval(_, { input }) {
+    async updateApproval(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       const approvalRef = approvalsRef.child(input.id);
       return approvalRef.once('value')
         .then(snapshot => {
@@ -133,7 +153,8 @@ module.exports = {
           return approvalRef.set(update).then(() => (Object.assign({ id: input.id }, update)));
         });
     },
-    deleteApproval(_, { input }) {
+    async deleteApproval(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       const approvalRef = approvalsRef.child(input.id);
       return approvalRef.once('value')
         .then((snapshot) => {
@@ -146,7 +167,8 @@ module.exports = {
 
 
     // devices
-    createDevice(_, { input }) {
+    async createDevice(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return (
         new Promise((resolve) => {
           const device = devicesRef.push(input, () => {
@@ -156,7 +178,8 @@ module.exports = {
         })
       );
     },
-    updateDevice(_, { input }) {
+    async updateDevice(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       const deviceRef = devicesRef.child(input.id);
       return deviceRef.once('value')
         .then(snapshot => {
@@ -170,7 +193,8 @@ module.exports = {
           return deviceRef.set(update).then(() => (Object.assign({ id: input.id }, update)));
         });
     },
-    deleteDevice(_, { input }) {
+    async deleteDevice(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       const deviceRef = devicesRef.child(input.id);
       return deviceRef.once('value')
         .then((snapshot) => {
@@ -182,7 +206,8 @@ module.exports = {
     },
 
     // connections
-    createConnection(_, { input }) {
+    async createConnection(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return (
         new Promise((resolve) => {
           const connection = connectionsRef.push(input, () => {
@@ -192,7 +217,8 @@ module.exports = {
         })
       );
     },
-    updateConnection(_, { input }) {
+    async updateConnection(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       const connRef = connectionsRef.child(input.id);
       return connRef.once('value')
         .then(snapshot => {
@@ -206,7 +232,8 @@ module.exports = {
           return connRef.set(update).then(() => (Object.assign({ id: input.id }, update)));
         });
     },
-    deleteConnection(_, { input }) {
+    async deleteConnection(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       const connRef = connectionsRef.child(input.id);
       return connRef.once('value')
         .then((snapshot) => {
@@ -218,7 +245,8 @@ module.exports = {
     },
 
     // group
-    createGroup(_, { input }) {
+    async createGroup(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return (
         new Promise((resolve) => {
           const group = groupsRef.push(input, () => {
@@ -228,7 +256,8 @@ module.exports = {
         })
       );
     },
-    updateGroup(_, { input }) {
+    async updateGroup(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       const groupRef = groupsRef.child(input.id);
       return groupRef.once('value')
         .then(snapshot => {
@@ -242,7 +271,8 @@ module.exports = {
           return groupRef.set(update).then(() => (Object.assign({ id: input.id }, update)));
         });
     },
-    deleteGroup(_, { input }) {
+    async deleteGroup(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       const groupRef = groupsRef.child(input.id);
       return groupRef.once('value')
         .then((snapshot) => {
@@ -254,7 +284,8 @@ module.exports = {
     },
 
     // Organization
-    createOrganization(_, { input }) {
+    async createOrganization(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       return (
         new Promise((resolve) => {
           const org = orgsRef.push(input, () => {
@@ -264,7 +295,8 @@ module.exports = {
         })
       );
     },
-    updateOrganization(_, { input }) {
+    async updateOrganization(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       const orgRef = orgsRef.child(input.id);
       return orgRef.once('value')
         .then(snapshot => {
@@ -278,7 +310,8 @@ module.exports = {
           return orgRef.set(update).then(() => (Object.assign({ id: input.id }, update)));
         });
     },
-    deleteOrganization(_, { input }) {
+    async deleteOrganization(_, { input }, { token }) {
+      let uid = await admin.auth().verifyIdToken(token);
       const orgRef = groupsRef.child(input.id);
       return orgRef.once('value')
         .then((snapshot) => {
@@ -290,5 +323,5 @@ module.exports = {
     },
 
 
-    }
+  }
 };

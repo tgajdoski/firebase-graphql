@@ -10,16 +10,33 @@ const app = express();
 app.use(cors());
 app.options('*', cors());
 app.use((req, res, next) => {
+  // console.log('req:', req);
+  // console.log('token:', req.header('Authentication'));
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   return next();
 });
 app.use(
   '/graphql',
-  apolloServerExpress.graphqlExpress({ schema })
+  apolloServerExpress.graphqlExpress(req => {
+    return ({
+      schema: schema,
+      context: {
+        token: req.header('Authentication'),
+      },
+    });
+  })
 );
 app.use(
   '/graphiql',
-  apolloServerExpress.graphiqlExpress({ endpointURL: '/api/graphql' })
+  apolloServerExpress.graphiqlExpress(req => {
+    return (
+      { 
+        endpointURL: '/api/graphql' ,
+        context: {
+          token: req.header('Authentication'),
+        }
+      });
+  }) 
 );
 app.use('/schema', (req, res) => {
   res.set('Content-Type', 'text/plain');
